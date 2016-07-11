@@ -102,7 +102,7 @@ ggplot(n, aes(x=sum)) + geom_histogram(binwidth=1000) +
 summarise(n, Mean = mean(sum), Median = median(sum))
 ```
 
-Since the mean is prone to be affected by outliers we can notice that it was more affected than the median.
+Both were changed, but the change was very small.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 

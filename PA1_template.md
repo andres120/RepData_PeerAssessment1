@@ -40,8 +40,8 @@ names(activity)[4] <- "day"
 
 
 ```r
-summ <- group_by(activity, date) %>% 
-  summarise(Sum = sum(steps, na.rm=T))
+summ <- group_by(activity[complete.cases(activity),], date) %>% 
+  summarise(Sum = sum(steps))
 ggplot(summ, aes(x=Sum)) + geom_histogram(binwidth=1000) +
   ggtitle("Frequency of Steps with NAs") +
   xlab("Steps") +
@@ -60,9 +60,9 @@ summarise(summ, Mean = mean(Sum), Median = median(Sum))
 ```
 ## Source: local data frame [1 x 2]
 ## 
-##      Mean Median
-##     (dbl)  (int)
-## 1 9354.23  10395
+##       Mean Median
+##      (dbl)  (int)
+## 1 10766.19  10765
 ```
 
 ## What is the average daily activity pattern?
@@ -159,7 +159,7 @@ summarise(n, Mean = mean(sum), Median = median(sum))
 ## 1 10766.19 10766.19
 ```
 
-Since the mean is prone to be affected by outliers we can notice that it was more affected than the median.
+Both were changed, but the change was very small.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
