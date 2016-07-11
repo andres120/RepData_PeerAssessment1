@@ -24,13 +24,12 @@ names(activity)[4] <- "day"
 
 
 ```{R}
-summ <- group_by(activity, date) %>% 
-  summarise(Sum = sum(steps, na.rm=T))
+summ <- group_by(activity[complete.cases(activity),], date) %>% 
+  summarise(Sum = sum(steps))
 ggplot(summ, aes(x=Sum)) + geom_histogram(binwidth=1000) +
   ggtitle("Frequency of Steps with NAs") +
   xlab("Steps") +
   ylab("Frequency")
-
 ```
 
 2. Calculate and report the **mean** and **median** total number of steps taken per day
