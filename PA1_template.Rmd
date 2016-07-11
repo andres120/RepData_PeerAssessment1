@@ -24,20 +24,19 @@ names(activity)[4] <- "day"
 
 
 ```{R}
-summ <- group_by(activity, day) %>% 
-  summarise(Mean = mean(steps, na.rm=T), 
-            Median = median(steps, na.rm=T), 
-            Sum = sum(steps, na.rm=T))
-ggplot(summ, aes(x=day, y=Sum)) + geom_bar(stat="identity") +
-  ggtitle("Total Steps with NAs") +
-  xlab("Day of the week") +
-  ylab("Step count")
+summ <- group_by(activity, date) %>% 
+  summarise(Sum = sum(steps, na.rm=T))
+ggplot(summ, aes(x=Sum)) + geom_histogram(binwidth=1000) +
+  ggtitle("Frequency of Steps with NAs") +
+  xlab("Steps") +
+  ylab("Frequency")
+
 ```
 
 2. Calculate and report the **mean** and **median** total number of steps taken per day
 
 ```{R}
-summ[,1:3]
+summarise(summ, Mean = mean(Sum), Median = median(Sum))
 ```
 
 ## What is the average daily activity pattern?
@@ -67,6 +66,9 @@ dim(activity[!complete.cases(activity),])[1]
 ```
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+  
+**Strategy:** To remove the NA I chose to replace each NA with its interval mean.
+
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 ```{R}
@@ -92,20 +94,16 @@ for(x in c(1:17568)) {
 4. Make a histogram of the total number of steps taken each day and Calculate and report the **mean** and **median** total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 ```{R}
-n <- group_by(complete, day) %>% summarise(sum = sum(steps))
-ggplot(n, aes(day, sum))+
-  geom_bar(stat="identity")+
-  ggtitle("Total Steps without NAs")+
-  xlab("Day of the week")+
-  ylab("Step count")
+n <- group_by(complete, date) %>% summarise(sum = sum(steps))
+ggplot(n, aes(x=sum)) + geom_histogram(binwidth=1000) +
+  ggtitle("Frequency of Steps with NAs") +
+  xlab("Steps") +
+  ylab("Frequency")
 
-group_by(complete, day) %>% summarise(Mean = mean(steps), 
-                                      Median = median(steps))
-
+summarise(n, Mean = mean(sum), Median = median(sum))
 ```
 
-Filling the missing data slightly affected the means, did not change the medians, and as expected it noticeable increased the total of steps.
-
+Since the mean is prone to be affected by outliers we can notice that it was more affected than the median.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 

@@ -9,10 +9,6 @@ library(dplyr)
 ```
 
 ```
-## Warning: package 'dplyr' was built under R version 3.3.1
-```
-
-```
 ## 
 ## Attaching package: 'dplyr'
 ```
@@ -44,14 +40,12 @@ names(activity)[4] <- "day"
 
 
 ```r
-summ <- group_by(activity, day) %>% 
-  summarise(Mean = mean(steps, na.rm=T), 
-            Median = median(steps, na.rm=T), 
-            Sum = sum(steps, na.rm=T))
-ggplot(summ, aes(x=day, y=Sum)) + geom_bar(stat="identity") +
-  ggtitle("Total Steps with NAs") +
-  xlab("Day of the week") +
-  ylab("Step count")
+summ <- group_by(activity, date) %>% 
+  summarise(Sum = sum(steps, na.rm=T))
+ggplot(summ, aes(x=Sum)) + geom_histogram(binwidth=1000) +
+  ggtitle("Frequency of Steps with NAs") +
+  xlab("Steps") +
+  ylab("Frequency")
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
@@ -60,21 +54,15 @@ ggplot(summ, aes(x=day, y=Sum)) + geom_bar(stat="identity") +
 
 
 ```r
-summ[,1:3]
+summarise(summ, Mean = mean(Sum), Median = median(Sum))
 ```
 
 ```
-## Source: local data frame [7 x 3]
+## Source: local data frame [1 x 2]
 ## 
-##         day     Mean Median
-##      <fctr>    <dbl>  <dbl>
-## 1    Friday 42.91567      0
-## 2    Monday 34.63492      0
-## 3  Saturday 43.52579      0
-## 4    Sunday 42.63095      0
-## 5  Thursday 28.51649      0
-## 6   Tuesday 31.07485      0
-## 7 Wednesday 40.94010      0
+##      Mean Median
+##     (dbl)  (int)
+## 1 9354.23  10395
 ```
 
 ## What is the average daily activity pattern?
@@ -104,7 +92,7 @@ means[which.max(means$Mean),]
 ## Source: local data frame [1 x 2]
 ## 
 ##   interval     Mean
-##      <int>    <dbl>
+##      (int)    (dbl)
 ## 1      835 206.1698
 ```
 ## Imputing missing values
@@ -121,6 +109,9 @@ dim(activity[!complete.cases(activity),])[1]
 ```
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+  
+**Strategy:** To remove the NA I chose to replace each NA with its interval mean.
+
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 
@@ -147,37 +138,28 @@ for(x in c(1:17568)) {
 
 
 ```r
-n <- group_by(complete, day) %>% summarise(sum = sum(steps))
-ggplot(n, aes(day, sum))+
-  geom_bar(stat="identity")+
-  ggtitle("Total Steps without NAs")+
-  xlab("Day of the week")+
-  ylab("Step count")
+n <- group_by(complete, date) %>% summarise(sum = sum(steps))
+ggplot(n, aes(x=sum)) + geom_histogram(binwidth=1000) +
+  ggtitle("Frequency of Steps with NAs") +
+  xlab("Steps") +
+  ylab("Frequency")
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
 ```r
-group_by(complete, day) %>% summarise(Mean = mean(steps), 
-                                      Median = median(steps))
+summarise(n, Mean = mean(sum), Median = median(sum))
 ```
 
 ```
-## Source: local data frame [7 x 3]
+## Source: local data frame [1 x 2]
 ## 
-##         day     Mean Median
-##      <fctr>    <dbl>  <dbl>
-## 1    Friday 41.68610      0
-## 2    Monday 35.24552      0
-## 3  Saturday 42.75789      0
-## 4    Sunday 41.97491      0
-## 5  Thursday 29.50162      0
-## 6   Tuesday 31.07485      0
-## 7 Wednesday 40.54483      0
+##       Mean   Median
+##      (dbl)    (dbl)
+## 1 10766.19 10766.19
 ```
 
-Filling the missing data slightly affected the means, did not change the medians, and as expected it noticeable increased the total of steps.
-
+Since the mean is prone to be affected by outliers we can notice that it was more affected than the median.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
